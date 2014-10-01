@@ -1,6 +1,6 @@
 scrapemyteacher
 ===============
-This is a web scraper written in Python to automatically collect data for an entire college and graph it with d3.
+This is a web scraper written in Python to automatically collect data for an entire college from [ratemyprofessor.com](http://www.ratemyprofessors.com/search.jsp?query=university%20of%20miami) and graph it with d3.
 
 **How do I use it?**
 
