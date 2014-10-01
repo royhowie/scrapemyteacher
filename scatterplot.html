@@ -34,7 +34,7 @@
     }
 </style>
 <body>
-
+<h1>University of Miami Rate My Professor Data</h1>
 <table>
     <thead>
         <tr>
@@ -48,7 +48,6 @@
         </tr>
     </thead>
     <tbody id="tableBody">
-        
     </tbody>
 </table>
 <script>
@@ -138,7 +137,7 @@
         var data = parseData(d);
         
         var h = data.sort(function (a, b) {
-            return b.overall - a.overall;
+            return b.overall - a.overall || b.clarity - a.clarity || b.helpfulness - a.helpfulness;
         })
         makeTable(h);
 
