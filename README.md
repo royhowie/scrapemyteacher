@@ -47,7 +47,7 @@ pip install requests
 easy_install requests
 ```
 
-Pick your poison.
+Pick your poison. Then, paste it into terminal and hit enter. You may need to prepend `sudo`, which will prompt you for your password, to the command. So, `sudo pip install requests` or `sudo easy_install requests`.
 
 ---
 
