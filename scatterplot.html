@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<title>University of Miami Rate My Professor Data</title>
+<meta charset="utf-8">
+
+<!-- Example based on http://bl.ocks.org/mbostock/3887118 -->
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<style>
+    body {
+        font: 11px sans-serif;
+    }
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+    .dot {
+        stroke: #000;
+    }
+    .tooltip {
+        position: absolute;
+        width: 200px;
+        height: 28px;
+        pointer-events: none;
+    }
+    table {
+        text-align: left;
+        position: absolute;
+        margin-top: 550px;
+    }
+</style>
+<body>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>name</th>
+            <th>overall</th>
+            <th>average</th>
+            <th>helpfulness</th>
+            <th>clarity</th>
+            <th>easiness</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        
+    </tbody>
+</table>
+<script>
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+    var xValue = function(d) {
+            return d.overall;
+        },
+        xScale = d3.scale.linear().range([0, width]),
+        xMap = function(d) {
+            return xScale(xValue(d))
+        },
+        xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+    var yValue = function(d) {
+            return d.easiness;
+        },
+        yScale = d3.scale.linear().range([height, 0]),
+        yMap = function(d) {
+            return yScale(yValue(d));
+        },
+        yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+    var cValue = function(d) {
+            return (d.overall + d.easiness) >> 1;
+        },
+        color = d3.scale.linear()
+            .domain([1, 2.5, 5])
+            .range(["red","yellow","green"]);
+
+    var legendConverter = {
+        1 : "no bueno",
+        2.5 : "up and coming",
+        5: "fantastico!"
+    }
+
+    var svg = d3.select("body").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+
+    var parseData = function (d) {
+        var holder = [];
+        d = d.split("\n");
+        for (var i = 1; i < d.length; i++) {
+            var pieces = d[i].split(",");
+            if (parseFloat(pieces[1]) > 0) {
+                holder.push({
+                    "name" : pieces[0],
+                    "overall" : parseFloat(pieces[1]),
+                    "average" : pieces[2],
+                    "helpfulness" : parseFloat(pieces[3]),
+                    "clarity" : parseFloat(pieces[4]),
+                    "easiness" : parseFloat(pieces[5])
+                })
+            }
+        }
+        return holder;
+    }
+    var makeTable = function (data) {
+        var tbody = $("#tableBody");
+
+        data.forEach(function (datum, position) {
+            tbody.append(
+                "<tr>" +
+                    "<td>" + (position + 1)     + ".</td>" +
+                    "<td>" + datum.name         + "</td>" +
+                    "<td>" + datum.overall      + "</td>" +
+                    "<td>" + datum.average      + "</td>" +
+                    "<td>" + datum.helpfulness  + "</td>" +
+                    "<td>" + datum.clarity      + "</td>" +
+                    "<td>" + datum.easiness     + "</td>" +
+                "</tr>"
+            )
+        })
+
+    }
+    $.get("data.txt", function (d) {
+
+        var data = parseData(d);
+        
+        var h = data.sort(function (a, b) {
+            return b.overall - a.overall;
+        })
+        makeTable(h);
+
+        xScale.domain([d3.min(data, xValue) - 0.5, d3.max(data, xValue) + 0.5]);
+        yScale.domain([d3.min(data, yValue) - 0.5, d3.max(data, yValue) + 0.5]);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("x", width)
+            .attr("y", -6)
+            .style("text-anchor", "end")
+            .text("overall rating");
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("easiness");
+
+        svg.selectAll(".dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("r", 3.5)
+            .attr("cx", xMap)
+            .attr("cy", yMap)
+            .style("fill", function (d) {
+                return color(cValue(d));
+            }) 
+            .on("mouseover", function (d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.9)
+                    .style("background-color", "#fcfcfa")
+                    .style("border-radius", "2px")
+                    .style("width", "100px")
+                    .style("height", "50px")
+                    .style("border", "solid 1px #333");
+
+                 tooltip.html(d.name + "<br>overall: " + xValue(d) + "<br>easiness: " + yValue(d))
+                        .style("left", (d3.event.pageX + 5) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+            }).on("mouseout", function (d) {
+                tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+            });
+
+        var legend = svg.selectAll(".legend")
+            .data(color.domain())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function (d, i) {
+                return "translate(0," + i * 20 + ")";
+            });
+
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+        
+        
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) {
+                return legendConverter[d];
+            })
+    })
+</script>
+</body>
+</html>
