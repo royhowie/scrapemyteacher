@@ -24,7 +24,7 @@ for i in xrange(0, THAT_XXXX_NUMBER_DIVIDED_BY_20_ROUNDED_UP):
 
 In the near future, I'll make it so you can pass the school id via an argument, when running the script. But that's soon™.
 
-Now, you'll need to run this file. If you have a windows computer, you can't be saved. Figure it out. (Go find a friend with a more worth computer.)
+Now, you'll need to run this file. If you have a windows computer, you can't be saved. Figure it out. (Go find a friend with a more worthy computer.)
 
 If you're on max/linux, then you're bueno. Let's get cooking. You'll need to have python installed, along with the requests library.
 
