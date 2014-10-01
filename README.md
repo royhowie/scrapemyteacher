@@ -2,14 +2,14 @@ scrapemyteacher
 ===============
 This is a web scraper written in Python to automatically collect data for an entire college and graph it with d3.
 
-**How do __I__ use it?**
+**How do I use it?**
 
 Go to [this page](http://www.ratemyprofessors.com/search.jsp) and search for your school. For example, if you go to UM, you would type "University of Miami" (without the quotes!) and hit enter. Don't select any of the suggested results.
 
 This will load a page that says "Showing 1-20 of XXXX results". The link should look like this:
 
 ```
-# http://www.ratemyprofessors.com/search.jsp?query=university+of+miami&offset=
+http://www.ratemyprofessors.com/search.jsp?query=university+of+miami&offset=
 ```
   
 If it doesn't have `&offset=`, append just that. Then, navigate to `scrape.py` and, on line 6, change `template = ...` to `template = "YOUR_LINK_IN_QUOTES"`.
