@@ -8,15 +8,19 @@ Go to [this page](http://www.ratemyprofessors.com/search.jsp) and search for you
 
 This will load a page that says "Showing 1-20 of XXXX results". The link should look like this:
 
-  # http://www.ratemyprofessors.com/search.jsp?query=university+of+miami&offset=
+```
+# http://www.ratemyprofessors.com/search.jsp?query=university+of+miami&offset=
+```
   
 If it doesn't have `&offset=`, append just that. Then, navigate to `scrape.py` and, on line 6, change `template = ...` to `template = "YOUR_LINK_IN_QUOTES"`.
 
 Now (this part is super important), you need to take that number, `XXXX`, and divide it by 20 and round up to the nearest whole number. Change line 11 to:
 
-  for i in xrange(0, THAT_XXXX_NUMBER_DIVIDED_BY_20_ROUNDED_UP):
-  # write the actual number, not THAT_XXXX_NUMBER_DIVIDED_BY_20_ROUNDED_UP
-  # as an example, it was 104 for when I scraped the UM data.
+```
+for i in xrange(0, THAT_XXXX_NUMBER_DIVIDED_BY_20_ROUNDED_UP):
+# write the actual number, not THAT_XXXX_NUMBER_DIVIDED_BY_20_ROUNDED_UP
+# as an example, it was 104 for when I scraped the UM data.
+```
 
 In the near future, I'll make it so you can pass the school id via an argument, when running the script. But that's soon™.
 
@@ -26,19 +30,22 @@ If you're on max/linux, then you're bueno. Let's get cooking. You'll need to hav
 
 "But how do I checked this?" Open up terminal (hit command space, then type "terminal", then hit enter). Type `python` and hit enter. If you have python, you'll see something like:
 
-  Python 2.7.5 (default, Mar  9 2014, 22:15:05) 
-  [GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
-  Type "help", "copyright", "credits" or "license" for more information.
+```
+Python 2.7.5 (default, Mar  9 2014, 22:15:05) 
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+```
   
 Hit <kbd>control-D</kbd>
   
 If not, there will be some error message. Macs have python installed by default. If you don't have python installed, visit [python.org](https://www.python.org) and follow the installation instructions.
 
 Now, you need to [install `requests`](http://docs.python-requests.org/en/latest/user/install/), so the script can scrape. This is rather easy, provided you have python installed.
-
-  pip install requests
-  # OR
-  easy_install requests
+```
+pip install requests
+# OR
+easy_install requests
+```
 
 Pick your poison.
 
@@ -48,7 +55,9 @@ If you don't know how to use terminal:
 
 Once you've done that, you're about set to go. Open up a new tab in terminal and type in `python`, followed by a space. By now, you should have downloaded all the files in this repository. As long as they are in the same folder, you should be fine. Drag and drop the `scrape.py` file onto terminal. You should seem something like
 
-  $ python /Users/royhowie/code/repo/scrapemyteacher/scrape.py
+```
+$ python /Users/royhowie/code/repo/scrapemyteacher/scrape.py
+```
   
 Hit enter. This will collect all the teacher IDs it needs to find. This part of the web scraping is rather quick.
 
