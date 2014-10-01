@@ -36,7 +36,7 @@ Python 2.7.5 (default, Mar  9 2014, 22:15:05)
 Type "help", "copyright", "credits" or "license" for more information.
 ```
   
-Hit <kbd>control-D</kbd>
+Hit <kbd>control-D</kbd> to exit the Python REPL.
   
 If not, there will be some error message. Macs have python installed by default. If you don't have python installed, visit [python.org](https://www.python.org) and follow the installation instructions.
 
