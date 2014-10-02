@@ -31,6 +31,8 @@
         text-align: left;
         position: absolute;
         margin-top: 550px;
+        width: 960px;
+        font-size: 1.1em;
     }
 </style>
 <body>
@@ -41,7 +43,7 @@
             <th>#</th>
             <th>name</th>
             <th>overall</th>
-            <th>average</th>
+            <!-- <th>average</th> -->
             <th>helpfulness</th>
             <th>clarity</th>
             <th>easiness</th>
@@ -55,35 +57,39 @@
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-    var xValue = function(d) {
+    var xValue = function (d) {
             return d.overall;
         },
         xScale = d3.scale.linear().range([0, width]),
-        xMap = function(d) {
+        xMap = function (d) {
             return xScale(xValue(d))
         },
         xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-    var yValue = function(d) {
+    var yValue = function (d) {
             return d.easiness;
         },
         yScale = d3.scale.linear().range([height, 0]),
-        yMap = function(d) {
+        yMap = function (d) {
             return yScale(yValue(d));
         },
         yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-    var cValue = function(d) {
-            return (d.overall + d.easiness) >> 1;
+    var cValue = function (d) {
+            var o = parseFloat(d.overall),
+                e = parseFloat(d.easiness);
+            return o + Math.sqrt(Math.pow(e - 3, 2))*(e >= 3 ? 1 : -1) - 5;
         },
         color = d3.scale.linear()
-            .domain([1, 2.5, 5])
-            .range(["red","yellow","green"]);
+            .domain([-5, -2.5, 0, 2.5, 5])
+            .range(["red","yellow","green", "yellow", "red"]);
 
     var legendConverter = {
-        1 : "no bueno",
-        2.5 : "up and coming",
-        5: "fantastico!"
+        "-5" : "no bueno",
+        "-2.5" : "decent",
+        "0": "awesome",
+        "2.5" : "decent",
+        "5" : "no bueno"
     }
 
     var svg = d3.select("body").append("svg")
@@ -114,6 +120,39 @@
         }
         return holder;
     }
+    var flatten = function (data) {
+        // data is an object
+        var holder = [];
+        for (var x in data) {
+            for (var y in data[x]) {
+                holder.push({
+                    overall: x,
+                    easiness: y,
+                    names: data[x][y]
+                })
+            }
+        }
+        return holder;
+    }
+    var groupByValues = function (data) {
+        var holder = {};
+
+        data.forEach(function (datum) {
+            if (holder[datum.overall]) {
+                var h = holder[datum.overall];
+                if (h[datum.easiness]) {
+                    h[datum.easiness].push(datum.name)
+                } else {
+                    h[datum.easiness] = [datum.name]
+                }
+
+            } else {
+                holder[datum.overall] = {}
+                holder[datum.overall][datum.easiness] = [datum.name]
+            }
+        })
+        return flatten(holder);
+    }
     var makeTable = function (data) {
         var tbody = $("#tableBody");
 
@@ -123,12 +162,24 @@
                     "<td>" + (position + 1)     + ".</td>" +
                     "<td>" + datum.name         + "</td>" +
                     "<td>" + datum.overall      + "</td>" +
-                    "<td>" + datum.average      + "</td>" +
+                    //"<td>" + datum.average      + "</td>" +
                     "<td>" + datum.helpfulness  + "</td>" +
                     "<td>" + datum.clarity      + "</td>" +
                     "<td>" + datum.easiness     + "</td>" +
                 "</tr>"
             )
+            if (position % 20 == 0 && position > 0) {
+                tbody.append(
+                    "<tr>" +
+                        "<td><strong>#</strong></td>" +
+                        "<td><strong>name</strong></td>" +
+                        "<td><strong>overall</strong></td>" +
+                        "<td><strong>helpfulness</strong></td>" +
+                        "<td><strong>clarity</strong></td>" +
+                        "<td><strong>easiness</strong></td>" +
+                    "</tr>"
+                )
+            }
         })
 
     }
@@ -141,8 +192,12 @@
         })
         makeTable(h);
 
-        xScale.domain([d3.min(data, xValue) - 0.5, d3.max(data, xValue) + 0.5]);
-        yScale.domain([d3.min(data, yValue) - 0.5, d3.max(data, yValue) + 0.5]);
+        data = groupByValues(data);
+
+        //xScale.domain([d3.min(data, xValue)/10, d3.max(data, xValue)*10]);
+        xScale.domain([0.5,5.5]);
+        yScale.domain([0.5,5.5]);
+        //yScale.domain([d3.min(data, yValue)/10, d3.max(data, yValue)*10]);
 
         svg.append("g")
             .attr("class", "x axis")
@@ -183,10 +238,10 @@
                     .style("background-color", "#fcfcfa")
                     .style("border-radius", "2px")
                     .style("width", "100px")
-                    .style("height", "50px")
+                    .style("height", "auto")
                     .style("border", "solid 1px #333");
 
-                 tooltip.html(d.name + "<br>overall: " + xValue(d) + "<br>easiness: " + yValue(d))
+                 tooltip.html(d.names.join(",<br>") + "<br>overall: " + xValue(d) + "<br>easiness: " + yValue(d))
                         .style("left", (d3.event.pageX + 5) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
             }).on("mouseout", function (d) {
