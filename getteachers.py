@@ -14,7 +14,8 @@ grades = re.compile('"rating">(.+)</div>')
 counter = 0
 
 with open("data.txt", "r+") as writeHere:
-	with open("ids.txt", "a") as getNumbers:
+	writeHere.write("name,overall,average,helpfulness,clarity,easiness,reviews,\n")
+	with open("ids.txt", "r") as getNumbers:
 		lines = getNumbers.read().split("\n")
 		for l in lines:
 			counter += 1
