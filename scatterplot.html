@@ -78,7 +78,7 @@
     var cValue = function (d) {
             var o = parseFloat(d.overall),
                 e = parseFloat(d.easiness);
-            return o + Math.sqrt(Math.pow(e - 3, 2))*(e >= 3 ? 1 : -1) - 5;
+            return o + e - 8;
         },
         color = d3.scale.linear()
             .domain([-5, -2.5, 0, 2.5, 5])
